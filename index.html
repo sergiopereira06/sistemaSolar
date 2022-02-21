@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Solar</title>
+</head>
+<body>
+    <canvas style="border: solid;" width="800" height="800"></canvas>
+</body>
+<script>
+    const cnv = document.querySelector("canvas")
+    const ctx = cnv.getContext("2d")
+    var img = []
+    var estrelas = []
+    const imgSun = new Image()
+    const imgAst = new Image()
+    const imgLua = new Image()
+    
+    for(i = 0; i<8 ; i++){
+        img[i] = new Image
+        img[i].src = `img/${i}.png`
+    }
+    imgSun.src = `img/sun.png`
+    imgLua.src = `img/lua.png`
+    imgAst.src = `img/asteroid.png`
+    class Estrela{
+        constructor(){
+            this.x = Math.random()*cnv.width;
+            this.y = Math.random()*cnv.height
+        }
+        draw(){
+            ctx.beginPath()
+            ctx.fillStyle = "white"
+            ctx.arc(this.x, this.y, 1, 0, Math.PI*2)
+            ctx.fill()
+            ctx.closePath()
+        }
+        
+    }
+    class Esfera {
+        constructor(img, raio, sz, vel, deg){
+            this.img = img;
+            this.x = cnv.width/2-(sz/2);
+            this.y = cnv.height/2-(sz/2);
+            this.r = raio;
+            this.sz = sz;
+            this.mov = 0;
+            this.vel = vel;
+            this.deg = deg;
+            this.rot = deg
+        }
+        draw(){
+            var rad = this.deg * Math.PI / 180;
+            ctx.translate(this.x + this.sz / 2, this.y + this.sz / 2);
+            ctx.rotate(rad);
+            ctx.drawImage(this.img, this.sz / 2 * (-1), this.sz / 2 * (-1), this.sz, this.sz);
+            ctx.rotate(rad * ( -1 ) );
+            ctx.translate((this.x + this.sz / 2) * (-1), (this.y + this.sz / 2) * (-1));
+        }
+        update(){
+            this.x = cnv.width/2-(this.sz/2)+Math.sin(this.mov)*this.r
+            this.y = cnv.width/2-(this.sz/2)+Math.cos(this.mov)*this.r
+            this.mov+=this.vel
+            this.deg+=this.rot
+        }
+        updateLua(){
+            this.x = planetas[2].x+7+Math.sin(this.mov)*this.r
+            this.y = planetas[2].y+7+Math.cos(this.mov)*this.r
+            this.mov+=this.vel
+
+        }
+    }
+    const sol = new Esfera(imgSun, 0, 100, 0, 0.1)
+    const asteroids = new Esfera(imgAst, 0, 500, 0, 0.1)
+    for(i = 0; i<200; i++){
+        estrelas.push(new Estrela)
+    }
+    var planetas = [
+        new Esfera(img[0], 85, 20, 0.004, 1),
+        new Esfera(img[1], 115, 25, 0.0016, 0.1),
+        new Esfera(img[2], 160, 30, 0.001, 1),
+        new Esfera(img[3], 215, 22, 0.00053, 0.1),
+        new Esfera(img[4], 255, 50, 0.000084, 0.1),
+        new Esfera(img[5], 305, 50, 0.000034, 0),
+        new Esfera(img[6], 345, 30, 0.0000119, 0.1),
+        new Esfera(img[7], 385, 30, 0.000006, 0.1)
+    ]
+    const lua = new Esfera(imgLua, 25, 15, 0.01, 1)
+    loop()
+    function loop(){
+        ctx.fillStyle = "black"
+        ctx.fillRect(0, 0, cnv.width, cnv.height)
+        sol.draw()
+        asteroids.draw()
+        lua.draw()
+        lua.updateLua()
+        for(e in estrelas){
+            estrelas[e].draw()
+        }
+        
+        for(p in planetas){
+            planetas[p].draw()
+            planetas[p].update()
+        }
+        window.requestAnimationFrame(loop)
+    }
+</script>
+</html>
